@@ -1,6 +1,6 @@
 FROM python:3.9-slim
 
-# Instalar dependencias del sistema para compilar dlib
+# Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -12,15 +12,13 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Copiar requirements primero (para cachear capas)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar el resto del código
 COPY . .
 
-# Puerto que usará Railway
+# EXPOSE no necesita variable, solo el puerto interno
 EXPOSE 5000
 
-# Comando para iniciar
-CMD gunicorn server:app --bind 0.0.0.0:$PORT
+# CORREGIDO: Usar exec form para que $PORT se expanda correctamente
+CMD ["sh", "-c", "gunicorn server:app --bind 0.0.0.0:${PORT:-5000}"]
