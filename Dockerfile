@@ -1,6 +1,5 @@
 FROM python:3.9-slim
 
-# Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -17,8 +16,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Dar permisos al script
-RUN chmod +x entrypoint.sh
+# Puerto fijo 8080 (Railway acepta cualquier puerto)
+EXPOSE 8080
 
-# Usar el script como entrypoint
-CMD ["./entrypoint.sh"]
+# Usar puerto fijo, no variable
+CMD ["gunicorn", "server:app", "--bind", "0.0.0.0:8080"]
